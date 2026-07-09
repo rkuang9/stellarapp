@@ -1,0 +1,238 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model downloads {
+  id                                String           @id @default(dbgenerated("(uuid())")) @db.VarChar(36)
+  created_at                        DateTime         @default(now()) @db.Timestamp(0)
+  updated_at                        DateTime         @default(now()) @db.Timestamp(0)
+  created_by                        String?          @db.VarChar(36)
+  updated_by                        String?          @db.VarChar(36)
+  project_parent                    String?          @db.VarChar(36)
+  username                          String?          @db.VarChar(36)
+  project_parents                   project_parents? @relation(fields: [project_parent], references: [id], map: "fk__downloads__project_parents__project_parent__id")
+  users_downloads_created_byTousers users?           @relation("downloads_created_byTousers", fields: [created_by], references: [id], map: "fk__downloads__users__created_by__id")
+  users_downloads_updated_byTousers users?           @relation("downloads_updated_byTousers", fields: [updated_by], references: [id], map: "fk__downloads__users__updated_by__id")
+  users_downloads_usernameTousers   users?           @relation("downloads_usernameTousers", fields: [username], references: [username], map: "fk__downloads__users__username__id")
+
+  @@index([project_parent], map: "fk__downloads__project_parents__project_parent__id")
+  @@index([created_by], map: "fk__downloads__users__created_by__id")
+  @@index([updated_by], map: "fk__downloads__users__updated_by__id")
+  @@index([username], map: "index__downloads__username")
+}
+
+model errors {
+  id                             String   @id @default(dbgenerated("(uuid())")) @db.VarChar(36)
+  created_at                     DateTime @default(now()) @db.Timestamp(0)
+  updated_at                     DateTime @default(now()) @db.Timestamp(0)
+  created_by                     String?  @db.VarChar(36)
+  updated_by                     String?  @db.VarChar(36)
+  source                         String   @db.VarChar(512)
+  code                           String   @db.VarChar(128)
+  description                    String   @db.VarChar(10240)
+  users_errors_created_byTousers users?   @relation("errors_created_byTousers", fields: [created_by], references: [id], map: "fk__errors_users__created_by__id")
+  users_errors_updated_byTousers users?   @relation("errors_updated_byTousers", fields: [updated_by], references: [id], map: "fk__errors_users__updated_by__id")
+
+  @@index([created_by], map: "fk__errors_users__created_by__id")
+  @@index([updated_by], map: "fk__errors_users__updated_by__id")
+  @@index([source], map: "index__errors__source")
+}
+
+model project_configs {
+  id                                      String          @id @default(dbgenerated("(uuid())")) @db.VarChar(36)
+  created_at                              DateTime        @default(now()) @db.Timestamp(0)
+  updated_at                              DateTime        @default(now()) @db.Timestamp(0)
+  created_by                              String?         @db.VarChar(36)
+  updated_by                              String?         @db.VarChar(36)
+  project_parent                          String          @db.VarChar(36)
+  branch                                  String          @default("1") @db.VarChar(64)
+  loss_fn                                 String?         @db.VarChar(64)
+  optimizer                               String?         @db.VarChar(64)
+  learning_rate                           Float?          @db.Float
+  epochs                                  Int?
+  batch_size                              Int?
+  use_gpu                                 Boolean?
+  validation_split                        Float?          @db.Float
+  metrics                                 Json?
+  layers                                  Json?
+  input_cols                              Json?
+  target_cols                             Json?
+  scale_cols                              Json?
+  vocab_size                              Int?
+  sentence_length                         Int?
+  filters                                 Json?
+  input_shape                             Json?
+  onehot_encoding                         Json?
+  metrics_history                         Json?
+  saved_model                             Boolean         @default(false)
+  project_type                            String?         @db.VarChar(64)
+  dummy_variables                         Json?
+  zscore_cols                             Json?
+  backend                                 String?         @db.VarChar(36)
+  finetune                                Json?
+  tokenizer                               String?         @db.VarChar(36)
+  users_project_configs_created_byTousers users?          @relation("project_configs_created_byTousers", fields: [created_by], references: [id], map: "fk__project__users__created_by__id")
+  project_parents                         project_parents @relation(fields: [project_parent], references: [id], onDelete: Cascade, map: "fk__project_configs__project_parents__project_parent__id")
+  users_project_configs_updated_byTousers users?          @relation("project_configs_updated_byTousers", fields: [updated_by], references: [id], map: "fk__project_configs__users__updated_by__id")
+
+  @@unique([project_parent, branch], map: "uk__project_configs__project_parent__branch")
+  @@index([created_by], map: "fk__project__users__created_by__id")
+  @@index([updated_by], map: "fk__project_configs__users__updated_by__id")
+  @@index([project_parent], map: "index__project_configs__project_parent")
+}
+
+model project_parents {
+  id                                      String            @id @default(dbgenerated("(uuid())")) @db.VarChar(36)
+  created_at                              DateTime          @default(now()) @db.Timestamp(0)
+  updated_at                              DateTime          @default(now()) @db.Timestamp(0)
+  created_by                              String?           @db.VarChar(36)
+  updated_by                              String?           @db.VarChar(36)
+  username                                String            @db.VarChar(36)
+  project_name                            String            @db.VarChar(100)
+  project_type                            String            @db.VarChar(64)
+  public_access                           Boolean           @default(true)
+  fork_of                                 String?           @db.VarChar(36)
+  project_description                     String            @default("") @db.VarChar(10000)
+  about                                   String            @default("") @db.VarChar(350)
+  parameters                              BigInt?           @db.UnsignedBigInt
+  downloads                               downloads[]
+  llm_configs                             llm_configs[]
+  project_configs                         project_configs[]
+  project_parents                         project_parents?  @relation("project_parentsToproject_parents", fields: [fork_of], references: [id], map: "fk__project_parents__project_parents__fork_of__id")
+  other_project_parents                   project_parents[] @relation("project_parentsToproject_parents")
+  users_project_parents_created_byTousers users?            @relation("project_parents_created_byTousers", fields: [created_by], references: [id], map: "fk__project_parents__users__created_by__id")
+  users_project_parents_updated_byTousers users?            @relation("project_parents_updated_byTousers", fields: [updated_by], references: [id], map: "fk__project_parents__users__updated_by__id")
+  users_project_parents_usernameTousers   users             @relation("project_parents_usernameTousers", fields: [username], references: [username], onDelete: Cascade, map: "fk__project_parents__users__username__username")
+  stars                                   stars[]
+
+  @@unique([project_name, username], map: "uk__project_parents__project_name__username")
+  @@index([fork_of], map: "fk__project_parents__project_parents__fork_of__id")
+  @@index([created_by], map: "fk__project_parents__users__created_by__id")
+  @@index([updated_by], map: "fk__project_parents__users__updated_by__id")
+  @@index([project_type], map: "index__project_parents__project_type")
+  @@index([public_access], map: "index__project_parents__public_access")
+  @@index([username], map: "index__project_parents__username")
+}
+
+model reserved_usernames {
+  id         String   @id @default(dbgenerated("(uuid())")) @db.VarChar(36)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+  created_by String?  @db.VarChar(36)
+  updated_by String?  @db.VarChar(36)
+  username   String   @unique(map: "username") @default("") @db.VarChar(255)
+
+  @@index([username], map: "index__reserved_usernames__username")
+}
+
+model stars {
+  id                            String          @id @default(dbgenerated("(uuid())")) @db.VarChar(36)
+  created_at                    DateTime        @default(now()) @db.Timestamp(0)
+  updated_at                    DateTime        @default(now()) @db.Timestamp(0)
+  created_by                    String?         @db.VarChar(36)
+  updated_by                    String?         @db.VarChar(36)
+  project_parent                String          @db.VarChar(36)
+  username                      String          @db.VarChar(36)
+  project_parents               project_parents @relation(fields: [project_parent], references: [id], onDelete: Cascade, map: "fk__stars__projects_parents__project_parent__id")
+  users_stars_created_byTousers users?          @relation("stars_created_byTousers", fields: [created_by], references: [id], map: "fk__stars__users__created_by__id")
+  users_stars_updated_byTousers users?          @relation("stars_updated_byTousers", fields: [updated_by], references: [id], map: "fk__stars__users__updated_by__id")
+  users_stars_usernameTousers   users           @relation("stars_usernameTousers", fields: [username], references: [username], onDelete: Cascade, map: "fk__stars__users__username__id")
+
+  @@unique([project_parent, username], map: "uk__stars__project_parent__username")
+  @@index([created_by], map: "fk__stars__users__created_by__id")
+  @@index([updated_by], map: "fk__stars__users__updated_by__id")
+  @@index([username], map: "index__stars__username")
+}
+
+model users {
+  id                                                String            @id @default(dbgenerated("(uuid())")) @db.VarChar(36)
+  email                                             String            @unique(map: "users.unique.email") @db.VarChar(255)
+  provider_id                                       String            @unique(map: "users.unique.provider_id") @db.VarChar(255)
+  provider                                          String?           @db.VarChar(64)
+  provider_type                                     String?           @db.VarChar(64)
+  created_at                                        DateTime          @default(now()) @db.Timestamp(0)
+  updated_at                                        DateTime          @default(now()) @db.Timestamp(0)
+  first_name                                        String?           @db.VarChar(255)
+  last_name                                         String?           @db.VarChar(255)
+  username                                          String            @unique(map: "users.unique.username") @db.VarChar(32)
+  updated_by                                        String?           @db.VarChar(36)
+  created_by                                        String?           @db.VarChar(36)
+  bio                                               String            @default("") @db.VarChar(3000)
+  profile_image_public                              Boolean           @default(true)
+  picture                                           String            @default("") @db.VarChar(256)
+  github                                            String            @default("") @db.VarChar(128)
+  twitter                                           String            @default("") @db.VarChar(128)
+  linkedin                                          String            @default("") @db.VarChar(128)
+  last_login                                        DateTime?         @db.Timestamp(0)
+  service_account                                   Boolean?          @default(false)
+  downloads_downloads_created_byTousers             downloads[]       @relation("downloads_created_byTousers")
+  downloads_downloads_updated_byTousers             downloads[]       @relation("downloads_updated_byTousers")
+  downloads_downloads_usernameTousers               downloads[]       @relation("downloads_usernameTousers")
+  errors_errors_created_byTousers                   errors[]          @relation("errors_created_byTousers")
+  errors_errors_updated_byTousers                   errors[]          @relation("errors_updated_byTousers")
+  llm_configs_llm_configs_created_byTousers         llm_configs[]     @relation("llm_configs_created_byTousers")
+  llm_configs_llm_configs_updated_byTousers         llm_configs[]     @relation("llm_configs_updated_byTousers")
+  project_configs_project_configs_created_byTousers project_configs[] @relation("project_configs_created_byTousers")
+  project_configs_project_configs_updated_byTousers project_configs[] @relation("project_configs_updated_byTousers")
+  project_parents_project_parents_created_byTousers project_parents[] @relation("project_parents_created_byTousers")
+  project_parents_project_parents_updated_byTousers project_parents[] @relation("project_parents_updated_byTousers")
+  project_parents_project_parents_usernameTousers   project_parents[] @relation("project_parents_usernameTousers")
+  stars_stars_created_byTousers                     stars[]           @relation("stars_created_byTousers")
+  stars_stars_updated_byTousers                     stars[]           @relation("stars_updated_byTousers")
+  stars_stars_usernameTousers                       stars[]           @relation("stars_usernameTousers")
+  users_users_created_byTousers                     users?            @relation("users_created_byTousers", fields: [created_by], references: [id], map: "users_users_FK")
+  other_users_users_created_byTousers               users[]           @relation("users_created_byTousers")
+  users_users_updated_byTousers                     users?            @relation("users_updated_byTousers", fields: [updated_by], references: [id], map: "users_users_FK_1")
+  other_users_users_updated_byTousers               users[]           @relation("users_updated_byTousers")
+
+  @@index([created_by], map: "users.fk.created_by.users")
+  @@index([updated_by], map: "users.fk.updated_by.users")
+}
+
+model llm_configs {
+  id                                  String          @id @default(dbgenerated("(uuid())")) @db.VarChar(36)
+  created_at                          DateTime        @default(now()) @db.Timestamp(0)
+  updated_at                          DateTime        @default(now()) @db.Timestamp(0)
+  created_by                          String?         @db.VarChar(36)
+  updated_by                          String?         @db.VarChar(36)
+  project_parent                      String          @db.VarChar(36)
+  branch                              String          @default("1") @db.VarChar(64)
+  loss_fn                             String?         @db.VarChar(64)
+  optimizer                           String?         @db.VarChar(64)
+  learning_rate                       Float?          @db.Float
+  epochs                              Int?
+  batch_size                          Int?
+  validation_split                    Float?          @db.Float
+  metrics                             Json?
+  layers                              Json?
+  metrics_history                     Json?
+  saved_model                         Boolean         @default(false)
+  project_type                        String?         @db.VarChar(64)
+  backend                             String?         @db.VarChar(36)
+  sequence_length                     Int?
+  pretraining_stride                  Int?
+  finetuning_stride                   Int?
+  pretraining_datasets                Json?
+  finetuning_datasets                 Json?
+  tokenizer                           String?         @db.VarChar(128)
+  vocab_size                          Int?
+  input_shape                         Json?
+  model_type                          String?         @db.VarChar(128)
+  num_heads                           Int?            @db.UnsignedMediumInt
+  num_layers                          Int?            @db.UnsignedMediumInt
+  embed_dim                           Int?            @db.UnsignedMediumInt
+  project_parents                     project_parents @relation(fields: [project_parent], references: [id], onDelete: Cascade, map: "fk__llm_configs__project_parents__project_parent__id")
+  users_llm_configs_created_byTousers users?          @relation("llm_configs_created_byTousers", fields: [created_by], references: [id], map: "fk__llm_configs__users__created_by__id")
+  users_llm_configs_updated_byTousers users?          @relation("llm_configs_updated_byTousers", fields: [updated_by], references: [id], map: "llm_configs_users_FK")
+
+  @@unique([project_parent, branch], map: "uk__llm_configs__project_parent__branch")
+  @@index([created_by], map: "fk__project__users__created_by__id")
+  @@index([updated_by], map: "fk__llm_configs__users__updated_by__id")
+  @@index([project_parent], map: "index__llm_configs__project_parent")
+}

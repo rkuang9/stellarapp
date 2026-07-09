@@ -5,9 +5,6 @@
 /.pnp
 .pnp.js
 
-# testing
-/coverage
-
 # next.js
 /.next/
 /out/
@@ -26,7 +23,9 @@ yarn-error.log*
 
 # local env files
 .env*.local
+
 .env
+.env.*
 
 # vercel
 .vercel
@@ -34,3 +33,24 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IntelliJ IDE files
+/.idea/
+
+# dataset files
+/src/dataset/
+node_modules/
+
+# testing
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/e2e/.auth/
+#/src/app/dev
+/coverage
+
+nohup.out
+
+TODO.md
+certificates
