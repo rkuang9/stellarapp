@@ -61,13 +61,6 @@ function HeroPanel() {
                         Start Now
                     </Link>
                 </Button>
-
-                <Button id="hero-explore-models" size="lg" variant="outline" className="cursor-pointer" asChild>
-                    <Link href={searchModelsURL()} prefetch={false}>
-                        Explore Models{" "}
-                        <ExternalLink />
-                    </Link>
-                </Button>
             </div>
 
         </section>
