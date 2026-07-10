@@ -1,4 +1,4 @@
-import { ModelJsonName, ProjectType, WeightsBinName } from "@/types/project_types";
+import { ProjectType } from "@/types/project_types";
 
 // https://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable-string
 export function readableFileSize(size: number, decimals: number = 2): string {
@@ -110,19 +110,6 @@ export function baseURL() {
 
 export function discordURL() {
     return process.env.NEXT_PUBLIC_DISCORD_URL!;
-}
-
-
-const MODEL_SAVE_DIRECTORY: string = process.env.AWS_S3_MODELS_FOLDER as string;
-
-
-export function getModelJsonPath(project_config_id: string) {
-    return `${MODEL_SAVE_DIRECTORY}/${project_config_id}/${ModelJsonName}`;
-}
-
-
-export function getModelWeightsBinPath(project_config_id: string) {
-    return `${MODEL_SAVE_DIRECTORY}/${project_config_id}/${WeightsBinName}`;
 }
 
 
