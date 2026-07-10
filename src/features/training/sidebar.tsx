@@ -30,6 +30,7 @@ import { useDialogue } from "@/components/dialogue";
 import ProjectTypes, { ProjectFolderZipName } from "@/types/project_types";
 import { Spinner } from "@/components/ui/spinner";
 import { toaster } from "@/components/toaster";
+import Link from "next/link";
 
 
 const SERIALIZE_MODEL_ID = "model-download";
@@ -71,7 +72,10 @@ export default function ProjectSidebar({ sectionStatus, sections, ...props }: Re
                     size="lg"
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
                 >
-                    <a href="/" className="truncate font-medium">
+                    <a className="truncate font-medium"
+                        // don't use Next.js's Link component because it bypasses the onbeforeunload event
+                        href={"/"}
+                    >
                         <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                             <Layers2 className="size-4 text-theme" />
                         </div>

@@ -43,15 +43,15 @@ export default defineConfig({
   projects: [
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'], storageState: 'e2e/.auth/user.json' }
+      use: { ...devices['Desktop Firefox'] }
     },
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], storageState: 'e2e/.auth/user.json' }
+      use: { ...devices['Desktop Chrome'] }
     },
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'], storageState: 'e2e/.auth/user.json' }
+      use: { ...devices['Desktop Safari'] }
     },
 
     /* Test against mobile viewports. */
