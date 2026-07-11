@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   devIndicators: {
     position: "bottom-right"
+  },
+  turbopack: {
+    root: __dirname
   }
 };
 
