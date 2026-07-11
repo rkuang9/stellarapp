@@ -69,7 +69,7 @@ export default function Inference() {
             return;
         }
 
-        if (meta.project && !worker?.isBuilt() && cache.cloud_model_state == "can_download" && downloadModel) {
+        if (meta.project && !worker?.isBuilt() && cache.cloud_model_state == "can_download" && downloadModel != undefined) {
             downloadCloudModel().then(() => {
                 makePrediction(images);
             }).catch(error => {

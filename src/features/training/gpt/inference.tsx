@@ -105,6 +105,7 @@ export default function ModelInference() {
 
         const { parameters } = await worker!.load({ model_json, weights_bin, project_config });
 
+        local_render(); // lets the useChatInference hook initialize a chat history
         toaster.success(`Loaded model with ${abbreviatedCount(parameters, 1)} parameters`);
     }
 
@@ -121,7 +122,7 @@ export default function ModelInference() {
             return;
         }
 
-        if (cache.cloud_model_state == "can_download" && !worker?.isBuilt() && downloadModel) {
+        if (cache.cloud_model_state == "can_download" && !worker?.isBuilt() && downloadModel != undefined) {
             try {
                 await downloadCloudModel();
             } catch (error: any) {

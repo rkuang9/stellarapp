@@ -144,7 +144,7 @@ export default function ModelTrain() {
                 }
             }
 
-            if (cache.cloud_model_state == "can_download" && !worker.isBuilt() && mode == "resume" && downloadModel) {
+            if (cache.cloud_model_state == "can_download" && !worker.isBuilt() && mode == "resume" && downloadModel != undefined) {
                 if (await confirmation({
                     title: "Download pretrained model?",
                     description: "A pretrained model exists for this project. Would you like to download and train with it?",
