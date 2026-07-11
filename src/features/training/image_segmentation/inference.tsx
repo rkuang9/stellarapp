@@ -21,7 +21,7 @@ import { useDialogue } from "@/components/dialogue";
 import { tiffToPNG } from "@/lib/data-processing/dataset_segmentation";
 import { useSidebar } from "@/components/ui/sidebar";
 import type ProjectConfig from "@/lib/data-processing/project_config";
-import { downloadModel } from "@/features/training/model_io";
+import { downloadModel } from "@model-io";
 
 
 export default function Inference() {

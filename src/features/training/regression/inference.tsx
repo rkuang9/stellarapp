@@ -16,7 +16,7 @@ import { abbreviatedCount, wait } from "@/lib/utility";
 import { RegressionContext } from "@/features/training/regression/regression-contexts";
 import { useDialogue } from "@/components/dialogue";
 import type RegressionModelWorker from "@/lib/webworker/regression_client";
-import { downloadModel } from "@/features/training/model_io";
+import { downloadModel } from "@model-io";
 
 
 export default function Inference() {

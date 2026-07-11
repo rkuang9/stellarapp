@@ -8,21 +8,17 @@ interface UploadProgress {
 }
 
 
-export async function uploadModel({ username, project_name, model_json, weights_bin, callback }: {
+export const uploadModel: undefined | (({ username, project_name, model_json, weights_bin, callback }: {
     username: string;
     project_name: string;
     model_json: File;
     weights_bin: File;
     callback?: (event: UploadProgress) => void;
-}) {
-    throw Error("Model uploading not supported");
-}
+}) => Promise<boolean>) = undefined;
 
 
-export async function downloadModel({ username, project_name, callback }: {
+export const downloadModel: undefined | ((({ username, project_name, callback }: {
     username: string;
     project_name: string;
-    callback?: (event: AxiosProgressEvent) => void;
-}) {
-    throw Error("Model downloading not supported");
-}
+    callback?: ((event: AxiosProgressEvent) => void) | undefined;
+}) => Promise<{ model_json: File, weights_bin: File | undefined; }>)) = undefined;

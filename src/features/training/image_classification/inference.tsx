@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Gallery, GalleryImage } from "@/features/training/image_classification/gallery";
 import ImageModelWorker from "@/lib/webworker/image_client";
 import type ProjectConfig from "@/lib/data-processing/project_config";
-import { downloadModel } from "@/features/training/model_io";
+import { downloadModel } from "@model-io";
 
 
 export default function Inference() {

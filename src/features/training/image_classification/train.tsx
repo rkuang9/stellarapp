@@ -26,7 +26,7 @@ import { OneHotEncodingArgs, MinMaxScaleArgs, ZScoreArgs, InputShapeArgs } from 
 import ImageModelWorker from "@/lib/webworker/image_client";
 import { logError } from "@/lib/errors/error_handling_client";
 import { TrainingBackend, Backend } from "@/types/hyperparameters";
-import { downloadModel } from "@/features/training/model_io";
+import { downloadModel } from "@model-io";
 
 
 export default function ModelTrain() {

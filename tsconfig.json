@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "rootDir": "./",
-    "types": ["jest"],
+    "types": [
+      "jest"
+    ],
     "target": "es2022",
     "lib": [
       "dom",
@@ -30,6 +32,9 @@
       ],
       "e2e/*": [
         "./e2e/*"
+      ],
+      "@model-io": [
+        "./src/lib/database/model_cloud_handler.ts"
       ]
     }
   },

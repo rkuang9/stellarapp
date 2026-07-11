@@ -27,7 +27,7 @@ import { MetricsChart, TrainingProgress } from "@/features/training/training-pro
 import RegressionModelWorker from "@/lib/webworker/regression_client";
 import { TrainingBackend, Backend } from "@/types/hyperparameters";
 import type ProjectConfig from "@/lib/data-processing/project_config";
-import { downloadModel } from "@/features/training/model_io";
+import { downloadModel } from "@model-io";
 
 
 export default function ModelTrain() {

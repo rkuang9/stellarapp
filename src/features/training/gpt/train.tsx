@@ -40,7 +40,7 @@ import { TrainMode } from "@/lib/webworker/worker_types";
 import { SelectField } from "@/components/custom/select-field";
 import { TrainingBackend, Backend } from "@/types/hyperparameters";
 import { type LLMConfig } from "@/lib/data-processing/llm_config";
-import { downloadModel } from "@/features/training/model_io";
+import { downloadModel } from "@model-io";
 
 
 export default function ModelTrain() {

@@ -30,7 +30,6 @@ import { useDialogue } from "@/components/dialogue";
 import ProjectTypes, { ProjectFolderZipName } from "@/types/project_types";
 import { Spinner } from "@/components/ui/spinner";
 import { toaster } from "@/components/toaster";
-import Link from "next/link";
 
 
 const SERIALIZE_MODEL_ID = "model-download";

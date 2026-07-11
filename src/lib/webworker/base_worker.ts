@@ -24,7 +24,7 @@ import { ProjectType } from "@/types/project_types";
 import { RemapCustomLosses, UnsupportedCustomLosses, UnsupportedCustomMetrics } from "@/types/hyperparameters";
 import type BaseConfig from "@/lib/data-processing/base_config";
 import { type LLMConfig } from "@/lib/data-processing/llm_config";
-import { uploadModel } from "@/features/training/model_io";
+import { uploadModel } from "@model-io";
 
 
 tf.env().set('IS_NODE', false);

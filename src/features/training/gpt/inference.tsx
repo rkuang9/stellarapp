@@ -35,7 +35,7 @@ import GPTModelWorker from "@/lib/webworker/gpt_client";
 import { Tokenizer, Tokenizers } from "@/lib/data-processing/nlp_sources";
 import { abbreviatedCount } from "@/lib/utility";
 import { SelectField } from "@/components/custom/select-field";
-import { downloadModel } from "@/features/training/model_io";
+import { downloadModel } from "@model-io";
 
 
 const kv_cache_size_options = {

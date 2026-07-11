@@ -25,7 +25,7 @@ import { logError } from "@/lib/errors/error_handling_client";
 import { TrainingBackend, Backend, Loss } from "@/types/hyperparameters";
 import SegmentationModelWorker from "@/lib/webworker/segmentation_client";
 import type ProjectConfig from "@/lib/data-processing/project_config";
-import { downloadModel } from "@/features/training/model_io";
+import { downloadModel } from "@model-io";
 
 
 const BATCH_NORM_THRESHOLD = 4;
