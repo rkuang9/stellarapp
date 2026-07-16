@@ -6,8 +6,7 @@ export const SupportedMimeTypes: Record<string, string> = {
     "txt": "text/plain",
     "json": "application/json",
     "jsonl": "application/jsonl",
-    //"pdf": "application/pdf",
-    //"parquet": "application/vnd.apache.parquet",
+    "parquet": "application/vnd.apache.parquet",
 }
 
 

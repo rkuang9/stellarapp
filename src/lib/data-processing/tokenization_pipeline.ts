@@ -2,6 +2,8 @@ import { SupportedMimeTypes } from "@/lib/data-processing/huggingface_datasets";
 import { FinetuneFeatureArgs, PretrainFeatureArgs } from "@/lib/data-processing/llm_config";
 import { Tokenizer, Tokenizers } from "@/lib/data-processing/nlp_sources";
 import { AutoTokenizer, PreTrainedTokenizer } from "@huggingface/transformers";
+import { parquetReadObjects } from "hyparquet";
+import { compressors } from "hyparquet-compressors";
 
 
 export const DATASET_CACHE_NAME = "stellar-datasets";
@@ -90,6 +92,10 @@ export async function tokenize(tokenizer_name: Tokenizer, features: PretrainFeat
         tokens = Array.isArray(features)
             ? tokenizePretrainJsonLines(tokenizer, await dataset.text(), features)
             : tokenizeFinetuneJsonLines(tokenizer, await dataset.text(), features, prompt_mask_args);
+    } else if (mime_type == "application/vnd.apache.parquet") {
+        tokens = Array.isArray(features)
+            ? await tokenizePretrainParquet(tokenizer, await dataset.arrayBuffer(), features)
+            : await tokenizeFinetuneParquet(tokenizer, await dataset.arrayBuffer(), features, prompt_mask_args)
     } else {
         throw Error(`Unsupported format (${mime_type}) for dataset ${url}`);
     }
@@ -165,6 +171,37 @@ export function tokenizePretrainJsonLines(tokenizer: PreTrainedTokenizer, text: 
         for (const feature of features) {
             tokenized.push({
                 tokens: tokenizer.encode(getNestedJsonValue(JSON.parse(row), feature)),
+                prompt_mask: null
+            });
+        }
+    }
+
+    return tokenized;
+}
+
+
+export async function tokenizePretrainParquet(
+    tokenizer: PreTrainedTokenizer,
+    parquet: ArrayBuffer,
+    features: PretrainFeatureArgs
+) {
+    for (let feature of features) {
+        if (feature.at(0) == "default") {
+            feature = feature.slice(1);
+        }
+    }
+
+    const tokenized: TrainingSample[] = [];
+    const rows = await parquetReadObjects({ file: parquet, compressors });
+
+    for (const row of rows) {
+        if (!row) {
+            continue;
+        }
+
+        for (const feature of features) {
+            tokenized.push({
+                tokens: tokenizer.encode(getNestedJsonValue(row, feature)),
                 prompt_mask: null
             });
         }
@@ -327,6 +364,49 @@ export function tokenizeFinetuneJsonLines(
             return null;
         }
 
+
+        const result: TrainingSample = {
+            tokens,
+            prompt_mask: mask_prompt
+                ? generatePromptMask(tokens, mask_prompt.assistant_start_tokens, mask_prompt.assistant_end_token)
+                : null
+        };
+
+        return result;
+    }).filter(tokens => tokens != null);
+
+    return chat;
+}
+
+
+export async function tokenizeFinetuneParquet(
+    tokenizer: PreTrainedTokenizer,
+    parquet: ArrayBuffer,
+    features: FinetuneFeatureArgs,
+    mask_prompt?: { assistant_start_tokens: number[], assistant_end_token: number }
+) {
+    if (features.user.at(0) == "default") {
+        features.user = features.user.slice(1);
+    }
+
+    if (features.assistant.at(0) == "default") {
+        features.assistant = features.assistant.slice(1);
+    }
+
+    if (features.system.at(0) == "default") {
+        features.system = features.system.slice(1);
+    }
+
+    const rows = await parquetReadObjects({ file: parquet, compressors });
+
+    const chat = rows.map(row => {
+        const tokens = features.user.length > 1
+            ? tokenizeMultiTurnConversation(tokenizer, row, features.user, features.assistant)
+            : tokenizeFinetuneSingleJsonRow(tokenizer, row, features.user, features.assistant, features.system) as number[];
+
+        if (tokens.length == 0) {
+            return null;
+        }
 
         const result: TrainingSample = {
             tokens,

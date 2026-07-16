@@ -28,7 +28,9 @@ const config: Config = {
 
     // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
     moduleNameMapper: {
-        "^@/(.*$)": "<rootDir>/src/$1"
+        "^@/(.*$)": "<rootDir>/src/$1",
+        "^hyparquet$": "<rootDir>/src/test/mocks/hyparquet.ts", // mock hyparquet because Jest doesn't recognize it
+        "^hyparquet-compressors$": "<rootDir>/src/test/mocks/hyparquet.ts", // mock hyparquet-compressors because Jest doesn't recognize it
     },
 
     // All imported modules in your tests should be mocked automatically
