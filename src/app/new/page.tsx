@@ -68,7 +68,7 @@ export default async function NewModel() {
                 </span>
 
                 <div className="w-full md:max-w-2xl flex flex-col gap-6">
-                    {model_types.map(model => <Link id={model.id} prefetch={false} href={model.url} key={model.title}>
+                    {model_types.map(model => <a id={model.id} href={model.url} key={model.title}>
                         <FieldLabel className="group bg-elevated dark:hover:bg-elevated/50 hover:cursor-pointer h-full">
                             <Field orientation="horizontal">
                                 <FieldContent>
@@ -84,7 +84,7 @@ export default async function NewModel() {
 
                             </Field>
                         </FieldLabel>
-                    </Link>)}
+                    </a>)}
                 </div>
 
             </div>
