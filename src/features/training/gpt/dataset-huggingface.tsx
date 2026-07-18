@@ -100,6 +100,9 @@ export default function HuggingfaceDataset({ url, files, features, closeMenu, ty
         features: []
     });
 
+    // formatted as { [actual_value]: display_value }
+    const hf_features_options = Object.fromEntries(hf_features.map(i => [i, i.replaceAll("<path>", ".")]));
+
     const form = useForm<zod.infer<typeof form_schema>>({
         resolver: zodResolver(form_schema),
         mode: "onBlur",
@@ -198,10 +201,13 @@ export default function HuggingfaceDataset({ url, files, features, closeMenu, ty
 
 
     const onFeatureChange = (role: "user" | "assistant" | "system" | "features", value: string) => {
-        const selected = value.split(".").filter(Boolean);
+        const selected = value.split("<path>").filter(Boolean);
 
         if (selected.length > 0) {
-            setSelectedFeatures(old => ({ ...old, [role]: selected }))
+            setSelectedFeatures(old => ({
+                ...old,
+                [role]: role == "features" ? [selected] : selected
+            }))
         }
     }
 
@@ -247,9 +253,9 @@ export default function HuggingfaceDataset({ url, files, features, closeMenu, ty
                     </div>
                 </Label>
                 <SelectField
-                    value={selected_features.features?.join(".") || ""}
+                    value={selected_features.features?.at(0)?.join("<path>") || ""}
                     id="llm-dataset-hf-pretrain-feature"
-                    options={hf_features}
+                    options={hf_features_options}
                     onValueChange={value => onFeatureChange("features", value)} />
             </Field>}
 
@@ -261,8 +267,10 @@ export default function HuggingfaceDataset({ url, files, features, closeMenu, ty
                         {loading_features_indicator}
                     </FieldLabel>
                     <SelectField
-                        value={selected_features.user.join(".")}
-                        id="llm-dataset-hf-user-feature" options={hf_features} onValueChange={value => onFeatureChange("user", value)} />
+                        value={selected_features.user.join("<path>")}
+                        id="llm-dataset-hf-user-feature"
+                        options={hf_features_options}
+                        onValueChange={value => onFeatureChange("user", value)} />
                 </Field>
 
                 <Field>
@@ -273,9 +281,9 @@ export default function HuggingfaceDataset({ url, files, features, closeMenu, ty
                     </FieldLabel>
 
                     <SelectField
-                        value={selected_features.assistant.join(".")}
+                        value={selected_features.assistant.join("<path>")}
                         id="llm-dataset-hf-assistant-feature"
-                        options={hf_features}
+                        options={hf_features_options}
                         onValueChange={value => onFeatureChange("assistant", value)} />
                 </Field>
 
@@ -289,7 +297,7 @@ export default function HuggingfaceDataset({ url, files, features, closeMenu, ty
                     <SelectField
                         value={selected_features.system.join(".")}
                         id="llm-dataset-hf-system-feature"
-                        options={hf_features}
+                        options={hf_features_options}
                         onValueChange={value => onFeatureChange("system", value)} />
                 </Field>
             </>}

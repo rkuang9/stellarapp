@@ -459,7 +459,11 @@ export function getNestedJsonValue(json: NestedObject, path: string[]) {
     for (let i = 0; i < path.length; i++) {
         const key = path[i];
 
-        if (current != null && typeof current === "object" && key in current) {
+        if (current != null && typeof current === "object") {
+            if (!(key in current) && i == 0) {
+                continue;
+            }
+
             current = current[key];
         } else {
             throw Error(`Tokenization: unexpected value found for the feature "${path.join(".")}": ${JSON.stringify(current)}`);

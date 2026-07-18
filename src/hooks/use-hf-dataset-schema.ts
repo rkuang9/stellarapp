@@ -56,7 +56,9 @@ export function useHuggingfaceDatasetSchema() {
             if (!features.length) {
                 throw Error("No features were found in this dataset");
             }
-            setFeatures(features.map(feature => feature.join(".")));
+
+            // using <path> as a delimiter instead of "." because datasets use periods as a key
+            setFeatures(features.map(feature => feature.join("<path>")));
         }).catch(error => {
             if (id !== request_id.current) {
                 return;
